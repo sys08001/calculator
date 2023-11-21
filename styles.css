@@ -1,0 +1,82 @@
+body, button {
+    font-family: 'Roboto', sans-serif;
+    font-size: 38px;
+}
+
+button {
+    border: 1px solid rgb(98,98,98);
+    background-color: gray;
+    color: white;
+    flex-grow: 1;
+    width: 100px;
+    height: 70px;
+}
+
+button:active {
+    background-color: rgb(166,166,166);
+}
+
+.button-operator {
+    background-color: rgb(111,77,77);
+}
+
+.button-operator:active {
+    background-color: rgb(71,53,53);
+}
+
+#container-outer {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 500px;
+    border: 1px solid black;
+    border-radius: 10px;
+    background: gray;
+}
+
+#container-display {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 150px;
+    background: rgb(98,98,98);
+    border-radius: 10px 10px 0px 0px;
+}
+
+#text-display {
+    margin: 0px 10px;
+    padding: 0px;
+    text-align: right;
+    font-size: 48px;
+    color: white;
+}
+
+#container-all-buttons {
+    display: flex;
+}
+
+#container-clear {
+    display: flex;
+    width: 300px;
+}
+
+#container-numbers {
+    display: flex;
+    flex-wrap: wrap;
+    width: 300px;
+}
+
+#container-operators {
+    display: flex;
+    flex-direction: column;
+}
+
+#button-0 {
+    width: 200px;
+    border-bottom-left-radius: 10px;
+}
+
+#button-eq {
+    border-bottom-right-radius: 10px;
+}
+
