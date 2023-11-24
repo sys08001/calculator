@@ -2,6 +2,7 @@ let clearButton = document.querySelector('#button-clear');
 let displayText = document.querySelector('#text-display');
 let numberButtons = document.querySelectorAll('#container-numbers button');
 let operatorButtons = document.querySelectorAll('#container-operators button');
+let equalButton = document.querySelector('#button-eq');
 
 // Used to store the two operands and operator
 let operand1;
@@ -10,7 +11,10 @@ let operator;
 
 // Create event listener for the clear button
 clearButton.addEventListener('click', () => {
-    displayText.textContent = '';
+    displayText.textContent = '0';
+    operand1 = undefined;
+    operand2 = undefined;
+    operator = undefined;
 });
 
 // Create event listeners for the number buttons
@@ -19,8 +23,19 @@ for (let numberButton of Array.from(numberButtons)) {
         // Grab the existing text in the display
         let prevText = displayText.textContent;
 
-        // Populate the display with the updated text
-        displayText.textContent = prevText + numberButton.textContent;
+        // If the existing text is 0 (default), make sure we clear it out
+        // before populating
+        if (prevText === "0") prevText = '';
+
+        // Populate the display with the updated text based on whether
+        // an operator has been pressed
+        if (!operator) {
+            displayText.textContent = prevText + numberButton.textContent;
+        }
+        else {
+            displayText.textContent = numberButton.textContent;
+            operator = undefined;
+        }
 
         // If a '.' exists in the updated text and we have not input an
         // operator yet, disable the button. Else, keep it enabled.
@@ -50,6 +65,12 @@ for (let operatorButton of Array.from(operatorButtons)) {
         })
     }
 }
+
+// Create event listener for the '=' button
+equalButton.addEventListener('click', () => {
+    // 
+
+} );
 
 
 
