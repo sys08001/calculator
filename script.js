@@ -4,17 +4,21 @@ let numberButtons = document.querySelectorAll('#container-numbers button');
 let operatorButtons = document.querySelectorAll('#container-operators button');
 let equalButton = document.querySelector('#button-eq');
 
-// Used to store the two operands and operator
+
 let operand1;
 let operand2;
-let operator;
+let operatorType;
+let operatorPressed = false;
+let result;
 
 // Create event listener for the clear button
 clearButton.addEventListener('click', () => {
     displayText.textContent = '0';
     operand1 = undefined;
     operand2 = undefined;
-    operator = undefined;
+    operatorType = undefined;
+    operatorPressed = false;
+    result = undefined;
 });
 
 // Create event listeners for the number buttons
@@ -29,18 +33,18 @@ for (let numberButton of Array.from(numberButtons)) {
 
         // Populate the display with the updated text based on whether
         // an operator has been pressed
-        if (!operator) {
+        if (!operatorPressed) {
             displayText.textContent = prevText + numberButton.textContent;
         }
         else {
             displayText.textContent = numberButton.textContent;
-            operator = undefined;
+            operatorPressed = false;
         }
 
         // If a '.' exists in the updated text and we have not input an
         // operator yet, disable the button. Else, keep it enabled.
         let dotButton = document.querySelector('#button-decimal');
-        if (displayText.textContent.includes('.') && !operator) {
+        if (displayText.textContent.includes('.') && !operatorType) {
             dotButton.disabled = true;
         }
         else {
@@ -54,13 +58,14 @@ for (let operatorButton of Array.from(operatorButtons)) {
     // '=' will have its own function, so ignore
     if (operatorButton.textContent != '=') {
         operatorButton.addEventListener('click', () => {
-            // Store the operator type
-            operator = operatorButton.textContent;
+            // Store the operator type and signal the button has been pressed
+            operatorType = operatorButton.textContent;
+            operatorPressed = true;
 
             // Inputting an operator means we are done inputting the 
             // first operand, so store it
             operand1 = Number(displayText.textContent);
-            console.log(operand1);
+            console.log(operand1); // TROUBLESHOOT
 
         })
     }
@@ -68,7 +73,31 @@ for (let operatorButton of Array.from(operatorButtons)) {
 
 // Create event listener for the '=' button
 equalButton.addEventListener('click', () => {
-    // 
+    // Store current display text as second operand
+    operand2 = Number(displayText.textContent);
+    console.log(operand2); // TROUBLESHOOT
+
+    // Perform arithmetic function only if we've stored both operands
+    // and an operator. Else, do nothing.
+    if (operand1 && operand2 && operatorType) {
+        switch(operatorType) {
+            case '+': 
+                result = add(operand1, operand2);
+                break;
+            case '-':
+                result = subtract(operand1, operand2);
+                break;
+            case 'x':
+                result = multiply(operand1, operand2);
+                break;
+            case '÷':
+                result = divide(operand1, operand2);
+                break;
+        }
+
+        // Display the result to the screen
+        displayText.textContent = result;
+    }
 
 } );
 
