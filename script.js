@@ -58,13 +58,27 @@ for (let operatorButton of Array.from(operatorButtons)) {
     // '=' will have its own function, so ignore
     if (operatorButton.textContent != '=') {
         operatorButton.addEventListener('click', () => {
-            // Store the operator type and signal the button has been pressed
+            // If we've already stored operand1 + operatorType and another
+            // number has been pressed prior to inputting another operator,
+            // grab operand2 from the text and operate on the values as if 
+            // '=' had been pressed. Display the result and set it as the new
+            // operand1. Finally, make operand2 undefined.
+            if (operand1 != undefined && operatorType != undefined && !operatorPressed) {
+                operand2 = Number(displayText.textContent);
+                operand1 = operate(operand1, operand2, operatorType)
+                displayText.textContent = operand1;
+                operand2 = undefined;
+            }
+            // If we haven't, then the first operand is just the display text.
+            else {
+                operand1 = Number(displayText.textContent);
+            }
+
+            // Store the current operator type and signal that the 
+            // button has been pressed
             operatorType = operatorButton.textContent;
             operatorPressed = true;
 
-            // Inputting an operator means we are done inputting the 
-            // first operand, so store it
-            operand1 = Number(displayText.textContent);
             console.log(operand1); // TROUBLESHOOT
 
         })
@@ -79,58 +93,55 @@ equalButton.addEventListener('click', () => {
 
     // Perform arithmetic function only if we've stored both operands
     // and an operator. Else, do nothing.
-    if (operand1 && operand2 && operatorType) {
-        switch(operatorType) {
-            case '+': 
-                result = add(operand1, operand2);
-                break;
-            case '-':
-                result = subtract(operand1, operand2);
-                break;
-            case 'x':
-                result = multiply(operand1, operand2);
-                break;
-            case '÷':
-                result = divide(operand1, operand2);
-                break;
-        }
+    if (operand1 != undefined && operand2 != undefined && operatorType) {
+        result = operate(operand1, operand2, operatorType);
 
         // Display the result to the screen
         displayText.textContent = result;
     }
-
 } );
 
 
 
 
-
-
-
-// Operator functions
-function add(num1, num2) {
-    return num1 + num2
-};
-
-function subtract(num1, num2) {
-    return num1 - num2
-};
-
-function multiply(num1, num2) {
-    return num1 * num2
+// Main operator function
+function operate(operand1, operand2, operatorType) {
+    switch(operatorType) {
+        case '+': 
+            return add(operand1, operand2);
+        case '-':
+            return subtract(operand1, operand2);
+        case 'x':
+            return multiply(operand1, operand2);
+        case '÷':
+            return divide(operand1, operand2);
+    }
 }
 
-function divide(num1, num2) {
-    return num1 / num2
+// Individual operator functions
+function add(operand1, operand2) {
+    return operand1 + operand2
+};
+
+function subtract(operand1, operand2) {
+    return operand1 - operand2
+};
+
+function multiply(operand1, operand2) {
+    return operand1 * operand2
+}
+
+function divide(operand1, operand2) {
+    return operand1 / operand2
 }
 
 // TROUBLESHOOTING
-// let num1 = 5;
-// let num2 = 4;
-// let addResult = add(num1, num2);
-// let subtractResult = subtract(num1, num2);
-// let multiplyResult = multiply(num1, num2);
-// let divideResult = divide(num1, num2);
+// let operand1 = 5;
+// let operand2 = 4;
+// let addResult = add(operand1, operand2);
+// let subtractResult = subtract(operand1, operand2);
+// let multiplyResult = multiply(operand1, operand2);
+// let divideResult = divide(operand1, operand2);
 // console.log({addResult});
 // console.log({subtractResult});
 // console.log({multiplyResult});
