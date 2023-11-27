@@ -1,6 +1,7 @@
 let clearButton = document.querySelector('#button-clear');
 let displayText = document.querySelector('#text-display');
 let numberButtons = document.querySelectorAll('#container-numbers button');
+let dotButton = document.querySelector('#button-decimal');
 let operatorButtons = document.querySelectorAll('#container-operators button');
 let equalButton = document.querySelector('#button-eq');
 
@@ -32,7 +33,7 @@ for (let numberButton of Array.from(numberButtons)) {
         if (prevText === "0") prevText = '';
 
         // Populate the display with the updated text based on whether
-        // an operator has been pressed
+        // the last press was an operator
         if (!operatorPressed) {
             displayText.textContent = prevText + numberButton.textContent;
         }
@@ -43,7 +44,6 @@ for (let numberButton of Array.from(numberButtons)) {
 
         // If a '.' exists in the updated text and we have not input an
         // operator yet, disable the button. Else, keep it enabled.
-        let dotButton = document.querySelector('#button-decimal');
         if (displayText.textContent.includes('.') && !operatorType) {
             dotButton.disabled = true;
         }
@@ -65,7 +65,11 @@ for (let operatorButton of Array.from(operatorButtons)) {
             // operand1. Finally, make operand2 undefined.
             if (operand1 != undefined && operatorType != undefined && !operatorPressed) {
                 operand2 = Number(displayText.textContent);
-                operand1 = operate(operand1, operand2, operatorType)
+                // If operand1 is 'NaN', do not perform any operations and keep
+                // displaying 'NaN' until we clear.
+                if (operand1 != 'NaN') {
+                    operand1 = operate(operand1, operand2, operatorType);
+                }
                 displayText.textContent = operand1;
                 operand2 = undefined;
             }
@@ -94,15 +98,18 @@ equalButton.addEventListener('click', () => {
     // Perform arithmetic function only if we've stored both operands
     // and an operator. Else, do nothing.
     if (operand1 != undefined && operand2 != undefined && operatorType) {
-        result = operate(operand1, operand2, operatorType);
+        // If operand1 stores 'NaN', keep displaying it
+        if (operand1 === 'NaN') {
+            result = 'NaN';
+        }
+        else {
+            result = operate(operand1, operand2, operatorType);
+        }
 
         // Display the result to the screen
         displayText.textContent = result;
     }
 } );
-
-
-
 
 // Main operator function
 function operate(operand1, operand2, operatorType) {
@@ -132,7 +139,14 @@ function multiply(operand1, operand2) {
 }
 
 function divide(operand1, operand2) {
-    return operand1 / operand2
+    // Handle divide by zero 
+    if (operand2 === 0) {
+        dotButton.disabled = true;
+        return "NaN"
+    }
+    else {
+        return operand1 / operand2
+    }  
 }
 
 // TROUBLESHOOTING
