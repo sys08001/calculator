@@ -1,10 +1,9 @@
 let clearButton = document.querySelector('#button-clear');
-let displayText = document.querySelector('#text-display');
-let numberButtons = document.querySelectorAll('#container-numbers button');
 let dotButton = document.querySelector('#button-decimal');
-let operatorButtons = document.querySelectorAll('#container-operators button');
 let equalButton = document.querySelector('#button-eq');
-
+let numberButtons = document.querySelectorAll('#container-numbers button');
+let operatorButtons = document.querySelectorAll('#container-operators button');
+let displayText = document.querySelector('#text-display');
 
 let operand1;
 let operand2;
@@ -13,51 +12,78 @@ let operatorPressed = false;
 let result;
 
 // Create event listener for the clear button
-clearButton.addEventListener('click', () => {
-    displayText.textContent = '0';
-    operand1 = undefined;
-    operand2 = undefined;
-    operatorType = undefined;
-    operatorPressed = false;
-    result = undefined;
-});
+clearButton.addEventListener('click', clear_all);
 
 // Create event listeners for the number buttons
 for (let numberButton of Array.from(numberButtons)) {
-    numberButton.addEventListener('click', () => {
-        // Grab the existing text in the display
-        let prevText = displayText.textContent;
+    // The '.' button will have its own listener, so ignore
+    if (numberButton.textContent != '.') {
+        numberButton.addEventListener('click', () => {
+            // If we just stored a result and a number button is pressed,
+            // treat it like we just hit the clear button before proceeding
+            if (result) clear_all();
 
-        // If the existing text is 0 (default), make sure we clear it out
-        // before populating
-        if (prevText === "0") prevText = '';
-
-        // Populate the display with the updated text based on whether
-        // the last press was an operator
-        if (!operatorPressed) {
-            displayText.textContent = prevText + numberButton.textContent;
-        }
-        else {
-            displayText.textContent = numberButton.textContent;
-            operatorPressed = false;
-        }
-
-        // If a '.' exists in the updated text and we have not input an
-        // operator yet, disable the button. Else, keep it enabled.
-        if (displayText.textContent.includes('.') && !operatorType) {
-            dotButton.disabled = true;
-        }
-        else {
-            dotButton.disabled = false;
-        }
-    })
+            // Grab the existing text in the display
+            let prevText = displayText.textContent;
+    
+            // If the existing text is 0 (default), make sure we clear it out
+            // before populating
+            if (prevText === "0") prevText = '';
+    
+            // Populate the display with the updated text based on whether
+            // the last press was an operator
+            if (!operatorPressed) {
+                displayText.textContent = prevText + numberButton.textContent;
+            }
+            else {
+                displayText.textContent = numberButton.textContent;
+                operatorPressed = false;
+            }
+        })
+    }
 }
+
+// Create event listener for the '.' button
+dotButton.addEventListener('click', () => {
+    // If we just stored a result and the '.' button is pressed, treat it 
+    // like we just hit the clear button before proceeding
+    if (result) clear_all();
+
+    // If there is already a '.' in the current display and the last button
+    // pressed was not an operator, disable the button
+    if (displayText.textContent.includes('.') && !operatorPressed) {
+        dotButton.disabled = true;
+    }
+    // Else, if the last button pressed was an operator, clear the screen
+    // and start with a leading zero before the '.'
+    else if (operatorPressed) {
+        displayText.textContent = '0.';
+        operatorPressed = false;
+    }
+    // Else, add the '.' to the existing display text
+    else {
+        let prevText = displayText.textContent;
+        displayText.textContent = prevText + '.';
+    }
+})
 
 // Create event listeners for the operator buttons
 for (let operatorButton of Array.from(operatorButtons)) {
     // '=' will have its own function, so ignore
     if (operatorButton.textContent != '=') {
         operatorButton.addEventListener('click', () => {
+            // If we just stored a result and an operator button is pressed,
+            // make result the new operand1 and clear out operand2 and result
+            // before proceeding.
+            if (result) {
+                operand1 = result;
+                operand2 = undefined;
+                result = undefined;
+            }
+
+            // Allow the use of '.' again
+            dotButton.disabled = false;
+
             // If we've already stored operand1 + operatorType and another
             // number has been pressed prior to inputting another operator,
             // grab operand2 from the text and operate on the values as if 
@@ -111,6 +137,35 @@ equalButton.addEventListener('click', () => {
     }
 } );
 
+// Event listeners which allow us to use keyboard keys for input
+// These just trigger a click on the respective button, which triggers
+// its defined event listener
+document.addEventListener('keydown', (event) => {
+    let numRegex = /[0-9]/;
+    if (numRegex.test(event.key)) {
+        document.getElementById(`button-${event.key}`).click();
+    }
+    if (event.key === '.') document.getElementById('button-decimal').click();
+    if (event.key === 'Backspace') {
+        document.getElementById('button-clear').click();
+    }
+    if (event.key === '=' || event.key === "Enter") {
+        document.getElementById('button-eq').click();
+    }
+    if (event.key === '+') {
+        document.getElementById('button-add').click();
+    }
+    if (event.key === '-') {
+        document.getElementById('button-sub').click();
+    }
+    if (event.key === '*') {
+        document.getElementById('button-mult').click();
+    }
+    if (event.key === '/') {
+        document.getElementById('button-div').click();
+    }
+})
+
 // Main operator function
 function operate(operand1, operand2, operatorType) {
     switch(operatorType) {
@@ -147,6 +202,17 @@ function divide(operand1, operand2) {
     else {
         return operand1 / operand2
     }  
+}
+
+// Clears all variables out
+function clear_all() {
+    displayText.textContent = '0';
+    operand1 = undefined;
+    operand2 = undefined;
+    operatorType = undefined;
+    operatorPressed = false;
+    result = undefined;
+    dotButton.disabled = false;
 }
 
 // TROUBLESHOOTING
