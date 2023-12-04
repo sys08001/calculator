@@ -73,11 +73,12 @@ for (let operatorButton of Array.from(operatorButtons)) {
     if (operatorButton.textContent != '=') {
         operatorButton.addEventListener('click', () => {
             // If we just stored a result and an operator button is pressed,
-            // make result the new operand1 and clear out operand2 and result
-            // before proceeding.
+            // make result the new operand1 and clear out operand2, 
+            // operatorType, and result before proceeding.
             if (result) {
                 operand1 = result;
                 operand2 = undefined;
+                operatorType = undefined;
                 result = undefined;
             }
 
@@ -109,7 +110,7 @@ for (let operatorButton of Array.from(operatorButtons)) {
             operatorType = operatorButton.textContent;
             operatorPressed = true;
 
-            console.log(operand1); // TROUBLESHOOT
+            console.log({operand1}); // TROUBLESHOOT
 
         })
     }
@@ -119,7 +120,7 @@ for (let operatorButton of Array.from(operatorButtons)) {
 equalButton.addEventListener('click', () => {
     // Store current display text as second operand
     operand2 = Number(displayText.textContent);
-    console.log(operand2); // TROUBLESHOOT
+    console.log({operand2}); // TROUBLESHOOT
 
     // Perform arithmetic function only if we've stored both operands
     // and an operator. Else, do nothing.
@@ -134,6 +135,8 @@ equalButton.addEventListener('click', () => {
 
         // Display the result to the screen
         displayText.textContent = result;
+
+        console.log({result}); // TROUBLESHOOT
     }
 } );
 
