@@ -171,16 +171,26 @@ document.addEventListener('keydown', (event) => {
 
 // Main operator function
 function operate(operand1, operand2, operatorType) {
+    let result;
     switch(operatorType) {
         case '+': 
-            return add(operand1, operand2);
+            result = add(operand1, operand2);
+            break
         case '-':
-            return subtract(operand1, operand2);
+            result = subtract(operand1, operand2);
+            break
         case 'x':
-            return multiply(operand1, operand2);
+            result = multiply(operand1, operand2);
+            break
         case '÷':
-            return divide(operand1, operand2);
+            result = divide(operand1, operand2);
+            break
     }
+    // Round to 10 decimal places
+    // Add epsilon to avoid mid-value rounding errors due to binary
+    // representation of certain values causing a round-down.
+    let n = 10000000000;
+    return Math.round((result + Number.EPSILON) * n) / n;
 }
 
 // Individual operator functions
