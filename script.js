@@ -29,13 +29,17 @@ for (let numberButton of Array.from(numberButtons)) {
             // If the existing text is 0 (default), make sure we clear it out
             // before populating
             if (prevText === "0") prevText = '';
-    
+
             // Populate the display with the updated text based on whether
             // the last press was an operator
             if (!operatorPressed) {
+                // If the existing text length = 14, resize the font
+                if (prevText.length === 14) displayText.style.fontSize = '28px';
+
                 displayText.textContent = prevText + numberButton.textContent;
             }
             else {
+                displayText.style.fontSize = '48px';
                 displayText.textContent = numberButton.textContent;
                 operatorPressed = false;
             }
@@ -57,12 +61,16 @@ dotButton.addEventListener('click', () => {
     // Else, if the last button pressed was an operator, clear the screen
     // and start with a leading zero before the '.'
     else if (operatorPressed) {
+        displayText.style.fontSize = '48px';
         displayText.textContent = '0.';
         operatorPressed = false;
     }
     // Else, add the '.' to the existing display text
     else {
         let prevText = displayText.textContent;
+
+        // If the existing text length = 14, resize the font
+        if (prevText.length === 14) displayText.style.fontSize = '28px';
         displayText.textContent = prevText + '.';
     }
 })
@@ -96,7 +104,16 @@ for (let operatorButton of Array.from(operatorButtons)) {
                 // displaying 'NaN' until we clear.
                 if (operand1 != 'NaN') {
                     operand1 = operate(operand1, operand2, operatorType);
+                    // If length of the string representation of the result is greater than 
+                    // or equal to 14, resize text. If not, keep it at normal size.
+                    if (operand1.toString().length >= 14) {
+                        displayText.style.fontSize = '28px';
+                    }
+                    else {
+                        displayText.style.fontSize = '48px';
+                    }
                 }
+                
                 displayText.textContent = operand1;
                 operand2 = undefined;
             }
@@ -131,6 +148,15 @@ equalButton.addEventListener('click', () => {
         }
         else {
             result = operate(operand1, operand2, operatorType);
+        }
+
+        // If length of the string representation of the result is greater than 
+        // or equal to 14, resize text. If not, keep it at normal size.
+        if (result.toString().length >= 14) {
+            displayText.style.fontSize = '28px';
+        }
+        else {
+            displayText.style.fontSize = '48px';
         }
 
         // Display the result to the screen
@@ -186,11 +212,17 @@ function operate(operand1, operand2, operatorType) {
             result = divide(operand1, operand2);
             break
     }
-    // Round to 10 decimal places
+    // For numbers with decimals - Round to 10 decimal places
     // Add epsilon to avoid mid-value rounding errors due to binary
     // representation of certain values causing a round-down.
-    let n = 10000000000;
-    return Math.round((result + Number.EPSILON) * n) / n;
+    if (result % 1 != 0) {
+        let n = 1000000000;
+        return Math.round((result + Number.EPSILON) * n) / n;
+    }
+    // Otherwise, just return the result unchanged
+    else {
+        return result;
+    }  
 }
 
 // Individual operator functions
@@ -219,6 +251,7 @@ function divide(operand1, operand2) {
 
 // Clears all variables out
 function clear_all() {
+    displayText.style.fontSize = '48px';
     displayText.textContent = '0';
     operand1 = undefined;
     operand2 = undefined;
